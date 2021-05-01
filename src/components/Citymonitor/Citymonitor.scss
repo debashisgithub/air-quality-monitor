@@ -1,0 +1,13 @@
+.Citymonitor {
+    .CardContainer {
+        margin-bottom: 1rem;
+
+        .card {
+            transition: all 0.5s linear;
+
+            .card-subtitle {
+                margin-bottom: 1rem;
+            }
+        }
+    }
+}

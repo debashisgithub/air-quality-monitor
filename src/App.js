@@ -1,23 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from 'react'
+import Websocket from 'react-websocket';
+import { Container } from 'react-bootstrap'
+
+import { SocketAQIData } from './utils/dataFilters'
+
+import Citymonitor from './components/Citymonitor/Citymonitor'
+import './App.scss'
+
 
 function App() {
+  const socketUrl = "ws://city-ws.herokuapp.com"
+  const localStoreKey = "aqiData"
+
+  const [aqiData, setAqiData] = useState({ liveData: [], historyData: {} })
+
+  useEffect(() => {
+    try {
+      const aqiLocalData = JSON.parse(localStorage.getItem(localStoreKey))
+      setAqiData(aqiLocalData)
+      localStorage.removeItem(localStoreKey)
+    } catch (err) { }
+  }, [])
+
+  window.onbeforeunload = () => {
+    if (!!aqiData) {
+      localStorage.setItem(localStoreKey, JSON.stringify(aqiData))
+    }
+  }
+
+  const handelUpdatedMessage = (data) => {
+    try {
+      const wData = JSON.parse(data)
+      setAqiData(prev => SocketAQIData(prev, wData))
+    } catch (err) { }
+  }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1 className="text-center AQI-title">Air Quality Monitor</h1>
+      <Container fluid>
+        <Citymonitor aqiData={aqiData} />
+      </Container>
+      <Websocket url={socketUrl} onMessage={handelUpdatedMessage} />
     </div>
   );
 }
