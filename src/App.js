@@ -9,7 +9,7 @@ import './App.scss'
 
 
 function App() {
-  const socketUrl = "ws://city-ws.herokuapp.com"
+  const socketUrl = "wss://city-ws.herokuapp.com"
   const localStoreKey = "aqiData"
 
   const [aqiData, setAqiData] = useState({ liveData: [], historyData: {} })
